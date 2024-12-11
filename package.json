@@ -16,6 +16,7 @@
     "vue-signature-pad": "^3.0.2"
   },
   "devDependencies": {
+    "nuxt-auth-sanctum": "^0.5.2",
     "vuetify-nuxt-module": "^0.18.3"
   }
 }
