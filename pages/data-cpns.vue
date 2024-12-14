@@ -1,7 +1,11 @@
 <template>
   <v-row>
     <v-col>
-      <v-card title="Data Peserta" flat>
+      <v-card flat>
+        <v-card-title class="d-flex align-center ga-2">
+          <v-label class="text-h4 text-black">Data Peserta CPNS</v-label>
+        </v-card-title>
+
         <template v-slot:text>
           <v-text-field
             v-model="search"
@@ -21,7 +25,7 @@
           :items-length="totalItems"
           :loading="loading"
           :search="search"
-          item-value="name"
+          item-value="nama_lengkap  "
           @update:options="loadItems"
         >
           <template v-slot:item.signature="{ item, value }">
@@ -110,18 +114,25 @@
 
 <script setup>
 import { VueSignaturePad } from "vue-signature-pad";
-
+definePageMeta({
+  sanctum: {
+    excluded: true,
+  },
+});
 const headers = [
-  { title: "Nomor Urut", align: "start", sortable: true, key: "nomor_urut" },
+  { title: "Nomor Urut", align: "start", key: "nomor_urut", sortable: true },
   {
     title: "Tanda Tangan",
     key: "signature",
     align: "center",
-    sortable: false,
   },
   { title: "Nomor Peserta", key: "nomor_peserta", align: "start" },
   { title: "NIK", key: "nik", align: "start" },
-  { title: "Nama Lengkap", key: "nama_lengkap", align: "start" },
+  {
+    title: "Nama Lengkap",
+    key: "nama_lengkap",
+    align: "start",
+  },
   { title: "Jadwal", key: "jadwal", align: "start" },
   { title: "Lokasi", key: "lokasi", align: "start" },
   { title: "Sesi", key: "sesi", align: "start" },
@@ -139,9 +150,10 @@ const paramsId = ref("");
 const signature = ref(null);
 const notification = ref(false);
 const notificationMessage = ref("Berhasil di Tandatangani");
+
 // Fetch initial data
 const { data, refresh } = await useAsyncData("cpns", () =>
-  client("/api/show-cpns")
+  client(`/api/show-cpns`)
 );
 
 const {
@@ -171,6 +183,10 @@ const deleteSignature = (id) => {
   execute();
 };
 
+// watch(chipsFilter, (newVal, oldVal) => {
+//   if (newVal) refresh();
+// });
+
 watch(statusSignature, (status, oldStatus) => {
   /* ... */
   if (status === "success") {
@@ -185,7 +201,7 @@ const FakeAPI = {
       setTimeout(() => {
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        // const items = data?.value?.data || [];
+
         const items = data?.value?.data.slice().filter((item) => {
           if (
             search &&
@@ -217,7 +233,6 @@ const FakeAPI = {
 
 const loadItems = async ({ page, itemsPerPage, sortBy, search }) => {
   loading.value = true;
-
   // // serverItems.value = data?.value?.data || [];
   FakeAPI.fetch({ page, itemsPerPage, sortBy, search }).then(
     ({ items, total }) => {

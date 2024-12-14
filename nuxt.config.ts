@@ -5,5 +5,12 @@ export default defineNuxtConfig({
   modules: ["vuetify-nuxt-module", "nuxt-auth-sanctum"],
   sanctum: {
     baseUrl: "http://localhost:8000", // Your Laravel API
+    redirect: {
+      onAuthOnly: "/login",
+      onGuestOnly: "/",
+    },
+    globalMiddleware: {
+      enabled: true,
+    },
   },
 });
